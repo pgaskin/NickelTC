@@ -1,0 +1,36 @@
+diff --git a/configure b/configure
+index 90c349cfc7..5c777dd4a6 100755
+--- a/configure
++++ b/configure
+@@ -62,7 +62,7 @@ PERL=`$WHICH perl 2>/dev/null`
+ 
+ # find out which awk we want to use, prefer gawk, then nawk, then regular awk
+ AWK=
+-for e in gawk nawk awk; do
++for e in nawk gawk awk; do
+     if "$WHICH" $e >/dev/null 2>&1 && ( $e -f /dev/null /dev/null ) >/dev/null 2>&1; then
+         AWK=$e
+         break
+@@ -195,7 +195,7 @@ expandQMakeConf()
+ 
+ extractQMakeVariables()
+ {
+-    $AWK '
++    LC_ALL=C $AWK '
+ BEGIN {
+     values["LITERAL_WHITESPACE"] = " "
+     values["LITERAL_DOLLAR"] = "$"
+@@ -3548,10 +3548,9 @@ END {
+         print "DEFAULT_LIBDIRS=\"/lib\n/usr/lib\"\n";
+ }'
+ 
+-unset tty
+-[ "$OPT_VERBOSE" = "yes" ] && tty=/dev/stderr
+-eval "`LC_ALL=C $TEST_COMPILER $SYSROOT_FLAG $TEST_COMPILER_CXXFLAGS -xc++ -E -v - < /dev/null 2>&1 > /dev/null | $AWK "$awkprog" | tee $tty`"
+-unset tty
++awkprog_result=`LC_ALL=C $TEST_COMPILER $SYSROOT_FLAG $TEST_COMPILER_CXXFLAGS -xc++ -E -v - < /dev/null 2>&1 > /dev/null | $AWK "$awkprog"`
++eval "$awkprog_result"
++[ "$OPT_VERBOSE" = "yes" ] && echo "$awkprog_result"
+ 
+ #setup the build parts
+ if [ -z "$CFG_BUILD_PARTS" ]; then

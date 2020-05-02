@@ -1,0 +1,198 @@
+diff --git a/config.tests/unix/compile.test b/config.tests/unix/compile.test
+index 22064b85e9..bc5258cf4b 100755
+--- a/config.tests/unix/compile.test
++++ b/config.tests/unix/compile.test
+@@ -13,9 +13,11 @@ DESCRIPTION=$7
+ shift 7
+ LFLAGS="$SYSROOT_FLAG"
+ INCLUDEPATH=""
++CFLAGS="$SYSROOT_FLAG"
+ CXXFLAGS="$SYSROOT_FLAG"
+ MAC_ARCH_CXXFLAGS=""
+ MAC_ARCH_LFLAGS=""
++QMAKE_ARGS=
+ while [ "$#" -gt 0 ]; do
+     PARAM=$1
+     case $PARAM in
+@@ -28,37 +30,40 @@ while [ "$#" -gt 0 ]; do
+         shift
+         ;;
+     -arch)
++        MAC_ARCH_CFLAGS="$MAC_ARCH_CFLAGS -arch $2"
+         MAC_ARCH_CXXFLAGS="$MAC_ARCH_CXXFLAGS -arch $2"
+         MAC_ARCH_LFLAGS="$MAC_ARCH_LFLAGS -arch $2"
+         shift
+         ;;
+     -F*|-m*|-x*)
+-        LFLAGS="$LFLAGS $PARAM"
+-        CXXFLAGS="$CXXFLAGS $PARAM"
++        LFLAGS="$LFLAGS \"$PARAM\""
++        CFLAGS="$CFLAGS \"$PARAM\""
++        CXXFLAGS="$CXXFLAGS \"$PARAM\""
+         ;;
+     -L*|-l*|-pthread)
+-	LFLAGS="$LFLAGS $PARAM"
++        LFLAGS="$LFLAGS \"$PARAM\""
+ 	;;
+     -I*)
+         INC=`echo $PARAM | sed -e 's/^-I//'`
+-        INCLUDEPATH="$INCLUDEPATH $INC"
++        INCLUDEPATH="$INCLUDEPATH \"$INC\""
+         ;;
+     -f*|-D*)
+-        CXXFLAGS="$CXXFLAGS $PARAM"
++        CFLAGS="$CFLAGS \"$PARAM\""
++        CXXFLAGS="$CXXFLAGS \"$PARAM\""
+         ;;
+     -Qoption)
+ 	# Two-argument form for the Sun Compiler
++        CFLAGS="$CFLAGS $PARAM \"$2\""
+ 	CXXFLAGS="$CXXFLAGS $PARAM \"$2\""
+ 	shift
+ 	;;
+-    *)  ;;
++    *)
++        QMAKE_ARGS="$QMAKE_ARGS $PARAM"
++        ;;
+     esac
+     shift
+ done
+ 
+-# debuggery
+-[ "$VERBOSE" = "yes" ] && echo "$DESCRIPTION auto-detection... ($*)"
+-
+ test -d "$OUTDIR/$TEST" || mkdir -p "$OUTDIR/$TEST"
+ 
+ cd "$OUTDIR/$TEST"
+@@ -67,22 +72,35 @@ test -r Makefile && $MAKE distclean >/dev/null 2>&1
+ # Make sure output from possible previous tests is gone
+ rm -f "$EXE" "${EXE}.exe"
+ 
+-set -- "$OUTDIR/bin/qmake" -nocache -spec "$QMKSPEC" "CONFIG+=$QMAKE_CONFIG" "CONFIG+=android_app" "CONFIG-=debug_and_release app_bundle lib_bundle" "LIBS*=$LFLAGS" "LIBS+=$MAC_ARCH_LFLAGS" "INCLUDEPATH*=$INCLUDEPATH" "QMAKE_CXXFLAGS*=$CXXFLAGS" "QMAKE_CXXFLAGS+=$MAC_ARCH_CXXFLAGS" "QT_BUILD_TREE=$OUTDIR" "$SRCDIR/$TEST/$EXE.pro" -o "$OUTDIR/$TEST/Makefile"
++set -- \
++    "$OUTDIR/bin/qmake" \
++     -nocache \
++     -spec "$QMKSPEC" \
++     "CONFIG+=$QMAKE_CONFIG" \
++     "CONFIG+=android_app" \
++     "CONFIG-=debug_and_release app_bundle lib_bundle" \
++     "LIBS+=$LFLAGS" \
++     "LIBS+=$MAC_ARCH_LFLAGS" \
++     "INCLUDEPATH*=$INCLUDEPATH" \
++     "QMAKE_CFLAGS*=$CFLAGS" \
++     "QMAKE_CFLAGS+=$MAC_ARCH_CFLAGS" \
++     "QMAKE_CXXFLAGS*=$CXXFLAGS" \
++     "QMAKE_CXXFLAGS+=$MAC_ARCH_CXXFLAGS" \
++     $QMAKE_ARGS \
++     "$SRCDIR/$TEST/$EXE.pro" \
++     -o "$OUTDIR/$TEST/Makefile"
+ if [ "$VERBOSE" = "yes" ]; then
+-    OUTDIR=$OUTDIR "$@"
+-    $MAKE
++    echo
++    OUTDIR=$OUTDIR "$@" && $MAKE && SUCCESS=yes
+ else
+-    OUTDIR=$OUTDIR "$@" >/dev/null 2>&1
+-    $MAKE >/dev/null 2>&1
++    OUTDIR=$OUTDIR "$@" >/dev/null 2>&1 && $MAKE >/dev/null 2>&1 && SUCCESS=yes
+ fi
+ 
+-( [ -f "$EXE" ] || [ -f "${EXE}.exe" ] ) && SUCCESS=yes
+-
+ # done
+ if [ "$SUCCESS" != "yes" ]; then
+-    [ "$VERBOSE" = "yes" ] && echo "$DESCRIPTION disabled."
++    [ "$VERBOSE" = "yes" ] && echo "$DESCRIPTION disabled." || echo " no."
+     exit 1
+ else
+-    [ "$VERBOSE" = "yes" ] && echo "$DESCRIPTION enabled."
++    [ "$VERBOSE" = "yes" ] && echo "$DESCRIPTION enabled." || echo " yes."
+     exit 0
+ fi
+diff --git a/config.tests/unix/openssl/openssl.pro b/config.tests/unix/openssl/openssl.pro
+index a023aee4aa..7608e9fd8e 100644
+--- a/config.tests/unix/openssl/openssl.pro
++++ b/config.tests/unix/openssl/openssl.pro
+@@ -1,2 +1,2 @@
+ SOURCES = openssl.cpp
+-CONFIG -= x11 qt
++CONFIG -= qt
+diff --git a/configure b/configure
+index 75fc8ea292..7c42e54aa2 100755
+--- a/configure
++++ b/configure
+@@ -62,7 +62,7 @@ PERL=`$WHICH perl 2>/dev/null`
+ 
+ # find out which awk we want to use, prefer gawk, then nawk, then regular awk
+ AWK=
+-for e in gawk nawk awk; do
++for e in nawk gawk awk; do
+     if "$WHICH" $e >/dev/null 2>&1 && ( $e -f /dev/null /dev/null ) >/dev/null 2>&1; then
+         AWK=$e
+         break
+@@ -195,7 +195,7 @@ expandQMakeConf()
+ 
+ extractQMakeVariables()
+ {
+-    $AWK '
++    LC_ALL=C $AWK '
+ BEGIN {
+     values["LITERAL_WHITESPACE"] = " "
+     values["LITERAL_DOLLAR"] = "$"
+@@ -3576,10 +3576,9 @@ END {
+         print "DEFAULT_LIBDIRS=\"/lib\n/usr/lib\"\n";
+ }'
+ 
+-unset tty
+-[ "$OPT_VERBOSE" = "yes" ] && tty=/dev/stderr
+-eval "`LC_ALL=C $TEST_COMPILER $SYSROOT_FLAG $TEST_COMPILER_CXXFLAGS -xc++ -E -v - < /dev/null 2>&1 > /dev/null | $AWK "$awkprog" | tee $tty`"
+-unset tty
++awkprog_result=`LC_ALL=C $TEST_COMPILER $SYSROOT_FLAG $TEST_COMPILER_CXXFLAGS -xc++ -E -v - < /dev/null 2>&1 > /dev/null | $AWK "$awkprog"`
++eval "$awkprog_result"
++[ "$OPT_VERBOSE" = "yes" ] && echo "$awkprog_result"
+ 
+ #setup the build parts
+ if [ -z "$CFG_BUILD_PARTS" ]; then
+diff --git a/src/corelib/global/qglobal.h b/src/corelib/global/qglobal.h
+index 6bc57bf549..2cc7052020 100644
+--- a/src/corelib/global/qglobal.h
++++ b/src/corelib/global/qglobal.h
+@@ -842,22 +842,31 @@ Q_CORE_EXPORT void qFreeAligned(void *ptr);
+ #  endif
+ #endif
+ 
+-#if defined(Q_CC_GNU) && !defined(Q_CC_INTEL) && !defined(Q_CC_RVCT)
++#if (defined(Q_CC_GNU) && !defined(Q_CC_RVCT))
+ /* make use of typeof-extension */
+ template <typename T>
+ class QForeachContainer {
+ public:
+-    inline QForeachContainer(const T& t) : c(t), brk(0), i(c.begin()), e(c.end()) { }
++    inline QForeachContainer(const T& t) : c(t), i(c.begin()), e(c.end()), control(1) { }
+     const T c;
+-    int brk;
+     typename T::const_iterator i, e;
++    int control;
+ };
+ 
+-#define Q_FOREACH(variable, container)                                \
++// Explanation of the control word:
++//  - it's initialized to 1
++//  - that means both the inner and outer loops start
++//  - if there were no breaks, at the end of the inner loop, it's set to 0, which
++//    causes it to exit (the inner loop is run exactly once)
++//  - at the end of the outer loop, it's inverted, so it becomes 1 again, allowing
++//    the outer loop to continue executing
++//  - if there was a break inside the inner loop, it will exit with control still
++//    set to 1; in that case, the outer loop will invert it to 0 and will exit too
++#  define Q_FOREACH(variable, container)                                \
+ for (QForeachContainer<__typeof__(container)> _container_(container); \
+-     !_container_.brk && _container_.i != _container_.e;              \
+-     __extension__  ({ ++_container_.brk; ++_container_.i; }))                       \
+-    for (variable = *_container_.i;; __extension__ ({--_container_.brk; break;}))
++     _container_.control && _container_.i != _container_.e;         \
++     ++_container_.i, _container_.control ^= 1)                     \
++    for (variable = *_container_.i; _container_.control; _container_.control = 0)
+ 
+ #else
+ 

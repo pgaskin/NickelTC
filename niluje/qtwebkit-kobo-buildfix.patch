@@ -1,0 +1,13 @@
+diff --git a/Source/WebKit/qt/WebCoreSupport/QWebPageAdapter.cpp b/Source/WebKit/qt/WebCoreSupport/QWebPageAdapter.cpp
+index e2bd37ad6..32e51c82e 100644
+--- a/Source/WebKit/qt/WebCoreSupport/QWebPageAdapter.cpp
++++ b/Source/WebKit/qt/WebCoreSupport/QWebPageAdapter.cpp
+@@ -246,7 +246,7 @@ void QWebPageAdapter::initializeWebCorePage()
+     }
+ #if HAVE(QTPOSITIONING)
+     else
+-        m_geolocationClient = new GeolocationClientQt;
++        m_geolocationClient = new GeolocationClientQt(this);
+ #endif
+ #endif
+ 

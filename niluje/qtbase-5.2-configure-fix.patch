@@ -1,0 +1,130 @@
+diff --git a/config.tests/unix/compile.test b/config.tests/unix/compile.test
+index 22064b85e9..bc5258cf4b 100755
+--- a/config.tests/unix/compile.test
++++ b/config.tests/unix/compile.test
+@@ -13,9 +13,11 @@ DESCRIPTION=$7
+ shift 7
+ LFLAGS="$SYSROOT_FLAG"
+ INCLUDEPATH=""
++CFLAGS="$SYSROOT_FLAG"
+ CXXFLAGS="$SYSROOT_FLAG"
+ MAC_ARCH_CXXFLAGS=""
+ MAC_ARCH_LFLAGS=""
++QMAKE_ARGS=
+ while [ "$#" -gt 0 ]; do
+     PARAM=$1
+     case $PARAM in
+@@ -28,37 +30,40 @@ while [ "$#" -gt 0 ]; do
+         shift
+         ;;
+     -arch)
++        MAC_ARCH_CFLAGS="$MAC_ARCH_CFLAGS -arch $2"
+         MAC_ARCH_CXXFLAGS="$MAC_ARCH_CXXFLAGS -arch $2"
+         MAC_ARCH_LFLAGS="$MAC_ARCH_LFLAGS -arch $2"
+         shift
+         ;;
+     -F*|-m*|-x*)
+-        LFLAGS="$LFLAGS $PARAM"
+-        CXXFLAGS="$CXXFLAGS $PARAM"
++        LFLAGS="$LFLAGS \"$PARAM\""
++        CFLAGS="$CFLAGS \"$PARAM\""
++        CXXFLAGS="$CXXFLAGS \"$PARAM\""
+         ;;
+     -L*|-l*|-pthread)
+-	LFLAGS="$LFLAGS $PARAM"
++        LFLAGS="$LFLAGS \"$PARAM\""
+ 	;;
+     -I*)
+         INC=`echo $PARAM | sed -e 's/^-I//'`
+-        INCLUDEPATH="$INCLUDEPATH $INC"
++        INCLUDEPATH="$INCLUDEPATH \"$INC\""
+         ;;
+     -f*|-D*)
+-        CXXFLAGS="$CXXFLAGS $PARAM"
++        CFLAGS="$CFLAGS \"$PARAM\""
++        CXXFLAGS="$CXXFLAGS \"$PARAM\""
+         ;;
+     -Qoption)
+ 	# Two-argument form for the Sun Compiler
++        CFLAGS="$CFLAGS $PARAM \"$2\""
+ 	CXXFLAGS="$CXXFLAGS $PARAM \"$2\""
+ 	shift
+ 	;;
+-    *)  ;;
++    *)
++        QMAKE_ARGS="$QMAKE_ARGS $PARAM"
++        ;;
+     esac
+     shift
+ done
+ 
+-# debuggery
+-[ "$VERBOSE" = "yes" ] && echo "$DESCRIPTION auto-detection... ($*)"
+-
+ test -d "$OUTDIR/$TEST" || mkdir -p "$OUTDIR/$TEST"
+ 
+ cd "$OUTDIR/$TEST"
+@@ -67,22 +72,35 @@ test -r Makefile && $MAKE distclean >/dev/null 2>&1
+ # Make sure output from possible previous tests is gone
+ rm -f "$EXE" "${EXE}.exe"
+ 
+-set -- "$OUTDIR/bin/qmake" -nocache -spec "$QMKSPEC" "CONFIG+=$QMAKE_CONFIG" "CONFIG+=android_app" "CONFIG-=debug_and_release app_bundle lib_bundle" "LIBS*=$LFLAGS" "LIBS+=$MAC_ARCH_LFLAGS" "INCLUDEPATH*=$INCLUDEPATH" "QMAKE_CXXFLAGS*=$CXXFLAGS" "QMAKE_CXXFLAGS+=$MAC_ARCH_CXXFLAGS" "QT_BUILD_TREE=$OUTDIR" "$SRCDIR/$TEST/$EXE.pro" -o "$OUTDIR/$TEST/Makefile"
++set -- \
++    "$OUTDIR/bin/qmake" \
++     -nocache \
++     -spec "$QMKSPEC" \
++     "CONFIG+=$QMAKE_CONFIG" \
++     "CONFIG+=android_app" \
++     "CONFIG-=debug_and_release app_bundle lib_bundle" \
++     "LIBS+=$LFLAGS" \
++     "LIBS+=$MAC_ARCH_LFLAGS" \
++     "INCLUDEPATH*=$INCLUDEPATH" \
++     "QMAKE_CFLAGS*=$CFLAGS" \
++     "QMAKE_CFLAGS+=$MAC_ARCH_CFLAGS" \
++     "QMAKE_CXXFLAGS*=$CXXFLAGS" \
++     "QMAKE_CXXFLAGS+=$MAC_ARCH_CXXFLAGS" \
++     $QMAKE_ARGS \
++     "$SRCDIR/$TEST/$EXE.pro" \
++     -o "$OUTDIR/$TEST/Makefile"
+ if [ "$VERBOSE" = "yes" ]; then
+-    OUTDIR=$OUTDIR "$@"
+-    $MAKE
++    echo
++    OUTDIR=$OUTDIR "$@" && $MAKE && SUCCESS=yes
+ else
+-    OUTDIR=$OUTDIR "$@" >/dev/null 2>&1
+-    $MAKE >/dev/null 2>&1
++    OUTDIR=$OUTDIR "$@" >/dev/null 2>&1 && $MAKE >/dev/null 2>&1 && SUCCESS=yes
+ fi
+ 
+-( [ -f "$EXE" ] || [ -f "${EXE}.exe" ] ) && SUCCESS=yes
+-
+ # done
+ if [ "$SUCCESS" != "yes" ]; then
+-    [ "$VERBOSE" = "yes" ] && echo "$DESCRIPTION disabled."
++    [ "$VERBOSE" = "yes" ] && echo "$DESCRIPTION disabled." || echo " no."
+     exit 1
+ else
+-    [ "$VERBOSE" = "yes" ] && echo "$DESCRIPTION enabled."
++    [ "$VERBOSE" = "yes" ] && echo "$DESCRIPTION enabled." || echo " yes."
+     exit 0
+ fi
+diff --git a/config.tests/unix/icu/icu.pro b/config.tests/unix/icu/icu.pro
+index 2c1b431f92..900fa9284d 100644
+--- a/config.tests/unix/icu/icu.pro
++++ b/config.tests/unix/icu/icu.pro
+@@ -12,5 +12,5 @@ win32 {
+         LIBS += -licuin -licuuc
+     }
+ } else {
+-    LIBS += -licui18n -licuuc
++    LIBS += -licui18n -licuuc -licudata
+ }
+diff --git a/config.tests/unix/openssl/openssl.pro b/config.tests/unix/openssl/openssl.pro
+index a023aee4aa..7608e9fd8e 100644
+--- a/config.tests/unix/openssl/openssl.pro
++++ b/config.tests/unix/openssl/openssl.pro
+@@ -1,2 +1,2 @@
+ SOURCES = openssl.cpp
+-CONFIG -= x11 qt
++CONFIG -= qt

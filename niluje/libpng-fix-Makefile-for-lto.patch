@@ -1,0 +1,12 @@
+diff --git a/Makefile.am b/Makefile.am
+index 08db3e599..b1c2b3714 100644
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -132,6 +132,7 @@ else
+   libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LDFLAGS += -export-symbols libpng.sym
+   libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_DEPENDENCIES = libpng.sym
+ endif
++libpng@PNGLIB_MAJOR@@PNGLIB_MINOR@_la_LDFLAGS += $(XC_LINKTOOL_CFLAGS)
+ 
+ #distribute headers in /usr/include/libpng/*
+ pkgincludedir= $(includedir)/$(PNGLIB_BASENAME)
