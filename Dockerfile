@@ -14,12 +14,16 @@ USER root
 
 # install deps
 RUN apt-get update -qqy && \
-   DEBIAN_FRONTEND=noninteractive apt-get install -qqy \
-        autoconf autoconf-archive automake bison build-essential bzip2 cmake \
-        curl file flex gawk git gperf help2man jq libdbus-1-dev libicu-dev \
-        libncurses-dev libpng-dev libtool make nano ninja-build pigz python \
-        python3 python3-distutils python3-pip rsync subversion tclsh texinfo \
-        unzip wget xz-utils zip && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -qqy \
+        autoconf autoconf-archive automake bash bison build-essential \
+        busybox-static bsdutils bzip2 coreutils curl diffutils file findutils \
+        flex gawk git gperf grep gzip jq libtool make nano openssh-client perl \
+        rsync sed unzip xz-utils zip && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -qqy \
+        cmake ninja-build python python3 subversion && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -qqy \
+        help2man libdbus-1-dev libicu-dev libncurses-dev pigz \
+        python3-distutils python3-pip tclsh texinfo && \
     rm -rf /var/lib/apt/lists
 
 # create the tc dir
