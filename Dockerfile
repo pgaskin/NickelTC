@@ -64,6 +64,7 @@ RUN mkdir /tc/tc-src /tc/tc-cache && \
     echo 'CT_EXPERIMENTAL=y' >> /tc/tc-src/.config && \
     echo 'CT_ALLOW_BUILD_AS_ROOT=y' >> /tc/tc-src/.config && \
     echo 'CT_ALLOW_BUILD_AS_ROOT_SURE=y' >> /tc/tc-src/.config && \
+    echo 'CT_LOG_PROGRESS_BAR=n' >> /tc/tc-src/.config && \
     /tc/ctng-out/bin/ct-ng -C /tc/tc-src oldconfig && \
     /tc/ctng-out/bin/ct-ng -C /tc/tc-src updatetools && \
     /tc/ctng-out/bin/ct-ng -C /tc/tc-src build CT_ONLY_DOWNLOAD=y
