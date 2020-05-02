@@ -18,7 +18,7 @@ RUN apt-get update -qqy && \
         autoconf autoconf-archive automake bash bison build-essential \
         busybox-static bsdutils bzip2 coreutils curl diffutils file findutils \
         flex gawk git gperf grep gzip jq libtool make nano openssh-client perl \
-        rsync sed unzip xz-utils zip && \
+        rsync sed unzip wget xz-utils zip && \
     DEBIAN_FRONTEND=noninteractive apt-get install -qqy \
         cmake ninja-build python python3 subversion && \
     DEBIAN_FRONTEND=noninteractive apt-get install -qqy \
