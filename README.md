@@ -100,4 +100,4 @@ The build number is an arbitrary counter which will be increased for newer rebui
 Some debian packages are included in the image on top of the base image with standard utilities:
 - Packages (removal will result in a major version increase): `autoconf` `autoconf-archive` `automake` `bash` `bison` `build-essential` `busybox-static` `bsdutils` `bzip2` `coreutils` `curl` `diffutils` `file` `findutils` `flex` `gawk` `git` `gperf` `grep` `gzip` `jq` `libtool` `make` `nano` `openssh-client` `perl` `rsync` `sed` `unzip` `wget` `xz-utils` `zip`
 - Packages (removal will result in a minor version increase): `cmake` `ninja-build` `python` `python3` `subversion`
-- Packages (may be removed without notice): `help2man` `libdbus-1-dev` `libicu-dev` `libncurses-dev` `pigz` `python3-distutils` `python3-pip` `tclsh` `texinfo`
+- Packages (may be removed without notice): `help2man` `libdbus-1-dev` `libicu-dev` `libncurses-dev` `libpng-dev` `pigz` `python3-distutils` `python3-pip` `tclsh` `texinfo` `zlib1g-dev`

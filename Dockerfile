@@ -22,8 +22,8 @@ RUN apt-get update -qqy && \
     DEBIAN_FRONTEND=noninteractive apt-get install -qqy \
         cmake ninja-build python python3 subversion && \
     DEBIAN_FRONTEND=noninteractive apt-get install -qqy \
-        help2man libdbus-1-dev libicu-dev libncurses-dev pigz \
-        python3-distutils python3-pip tclsh texinfo && \
+        help2man libdbus-1-dev libicu-dev libncurses-dev libpng-dev pigz \
+        python3-distutils python3-pip tclsh texinfo zlib1g-dev && \
     rm -rf /var/lib/apt/lists
 
 # create the tc dir
