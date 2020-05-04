@@ -74,19 +74,25 @@ relocation and DESTDIR/prefixes are up to date.
 
 ### Versioning
 The docker images will be tagged with a version in the form `<major>`,
-`<major>.<minor>`, `<major>.<minor>.<commit-sha>.<build-number>` and will be released on a rolling basis.
+`<major>.<minor>`, `<major>.<minor>.<commit-sha>.<build-number>` and will be
+released on a rolling basis. Note that there is not a `latest` tag, so you
+must choose a versioned one.
 
 Major versions will be incremented manually when:
 - The path to the toolchain or an important tool changes.
 - A change is made to the toolchain which reduces compatibility with Kobo devices.
 - Qt is updated to a new major version.
 - An important package is removed (see below).
-- The versioning scheme changes in a way where the `<major>` or the `<major>.<minor>` tags have different meanings (it will always have a major version, though).
+- The versioning scheme changes in a way where the `<major>` or the
+  `<major>.<minor>` tags have different meanings (it will always have a major
+  version, though).
 - There are other large breaking changes.
 
 Minor versions will be incremented manually when:
-- A significant improvement or bugfix applicable to the majority of builds is made to the toolchain.
-- A minor package is removed (see below). If you depend on one of these packages, you should install it explicitly.
+- A significant improvement or bugfix applicable to the majority of builds is
+  made to the toolchain.
+- A minor package is removed (see below). If you depend on one of these
+  packages, you should install it explicitly.
 - Major changes are made to the Dockerfile.
 - A dependency's version is updated and requires new downloads.
 - There are enough cumulative small changes.
@@ -95,9 +101,18 @@ Minor versions will be incremented manually when:
 
 The commit sha is an arbitrary number of characters of the current git hash.
 
-The build number is an arbitrary counter which will be increased for newer rebuilds of the commit.
+The build number is an arbitrary counter which will be increased for newer
+rebuilds of the commit.
 
-Some debian packages are included in the image on top of the base image with standard utilities:
-- Packages (removal will result in a major version increase): `autoconf` `autoconf-archive` `automake` `bash` `bison` `build-essential` `busybox-static` `bsdutils` `bzip2` `coreutils` `curl` `diffutils` `file` `findutils` `flex` `gawk` `git` `gperf` `grep` `gzip` `jq` `libtool` `make` `nano` `openssh-client` `perl` `rsync` `sed` `unzip` `wget` `xz-utils` `zip`
-- Packages (removal will result in a minor version increase): `cmake` `ninja-build` `python` `python3` `subversion`
-- Packages (may be removed without notice): `help2man` `libdbus-1-dev` `libicu-dev` `libncurses-dev` `libpng-dev` `pigz` `python3-distutils` `python3-pip` `tclsh` `texinfo` `zlib1g-dev`
+Some debian packages are included in the image on top of the base image with
+standard utilities:
+- Packages (removal will result in a major version increase): `autoconf`
+  `autoconf-archive` `automake` `bash` `bison` `build-essential`
+  `busybox-static` `bsdutils` `bzip2` `coreutils` `curl` `diffutils` `file`
+  `findutils` `flex` `gawk` `git` `gperf` `grep` `gzip` `jq` `libtool` `make`
+  `nano` `openssh-client` `perl` `rsync` `sed` `unzip` `wget` `xz-utils` `zip`
+- Packages (removal will result in a minor version increase): `cmake`
+  `ninja-build` `python` `python3` `subversion`
+- Packages (may be removed without notice): `help2man` `libdbus-1-dev`
+  `libicu-dev` `libncurses-dev` `libpng-dev` `pigz` `python3-distutils`
+  `python3-pip` `tclsh` `texinfo` `zlib1g-dev`
