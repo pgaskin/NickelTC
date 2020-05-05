@@ -1,0 +1,85 @@
+name: Build
+on: [push, pull_request]
+
+jobs:
+  build:
+    name: NickelTC
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v1
+
+    - name: Build
+      run: docker build -t nickeltc .
+
+    - name: Export tarballs
+      run: |
+        docker save nickeltc > nickeltc.docker.tar &&
+        docker run --rm --interactive nickeltc tar cvf - -C /tc arm-nickel-linux-gnueabihf > nickeltc.tar
+  
+    - name: Upload tarball (toolchain)
+      uses: actions/upload-artifact@v2
+      with:
+        name: Toolchain
+        path: nickeltc.tar
+
+    - name: Upload tarball (docker)
+      if: ${{github.event_name == 'pull_request'}}
+      uses: actions/upload-artifact@v2
+      with:
+        name: Toolchain (Docker)
+        path: nickeltc.docker.tar
+
+    - name: Setup docker registries
+      if: ${{github.event_name == 'push'}}
+      run: docker login --username geek1011 --password ${{secrets.GHTOKEN}} docker.pkg.github.com
+
+    - name: Push docker image (nickeltc-git)
+      if: ${{github.event_name == 'push'}}
+      run: |
+        echo                "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
+        docker tag nickeltc "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
+        docker push         "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.sha}}" | head -c7)"
+
+    - name: Push docker image (nickeltc)
+      if: ${{github.event_name == 'push' && github.ref == 'refs/heads/master'}}
+      run: |
+        echo                "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}" &&
+        docker tag nickeltc "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}" &&
+        docker push         "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}"
+
+    - name: Check if the current commit is the latest on the current branch
+      id: latest
+      if: ${{github.event_name == 'push'}}
+      run: |
+        git fetch --all --tags &&
+        current_ref="${{github.sha}}" &&
+        current="$(git rev-parse "${current_ref}")" &&
+        echo "current(${{github.ref}} = ${current_ref})=${current}" &&
+        #upstream_ref="@{upstream}" &&
+        upstream_ref="refs/remotes/origin/$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g')" &&
+        upstream="$(git rev-parse "${upstream_ref}")" &&
+        echo "upstream(${upstream_ref})=${upstream}" &&
+        latest="$(test "${upstream}" = "${current}" && echo true || echo false)" &&
+        echo "latest=${latest}" &&
+        echo "::set-output is=${latest}"
+
+    - name: Push docker image with additional tags (nickeltc-git)
+      if: ${{github.event_name == 'push' && steps.latest.is == 'true'}}
+      run: |
+        echo                "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')" &&
+        docker tag nickeltc "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')" &&
+        docker push         "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')"
+
+    - name: Push docker image with additional tags (nickeltc)
+      if: ${{github.ref == 'refs/heads/master' && steps.latest.is == 'true'}}
+      run: |
+        echo                "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0" &&
+        docker tag nickeltc "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0" &&
+        docker push         "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0" &&
+        echo                "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1" &&
+        docker tag nickeltc "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1" &&
+        docker push         "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1"

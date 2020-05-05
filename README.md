@@ -1,4 +1,7 @@
 # NickelTC
+
+[![Build](https://github.com/geek1011/NickelTC/workflows/Build/badge.svg)](https://github.com/geek1011/NickelTC/actions)
+
 A dockerized, deterministic, automated, fixed, and fully-relocatable build of [@NiLuJe](https://github.com/geek1011/NiLuJe)'s [toolchain](http://trac.ak-team.com/trac/log/niluje/Configs/trunk/Kindle/Misc) for Kobo eReaders.
 
 This succeeds the old docker image `docker.io/geek1011/kobo-toolchain` built from [kobo-plugin-experiments](https://github.com/geek1011/kobo-plugin-experiments).
@@ -21,14 +24,13 @@ This succeeds the old docker image `docker.io/geek1011/kobo-toolchain` built fro
   - Patches for running ancient build systems on newer distros.
 
 ### Usage
-Prebuilt docker images are coming soon.
+Prebuilt docker images are available [here](https://github.com/geek1011/NickelTC/packages).
 
-To run it directly
-from the docker image, you can create a wrapper like:
+To run it directly from the docker image, you can create a wrapper like:
 
 ```sh
 #!/bin/bash
-exec /usr/bin/docker run --volume="$PWD:$PWD" --user="$(id --user):$(id --group)" --workdir="$PWD" --env=HOME --entrypoint="$(basename "${BASH_SOURCE[0]}")" --rm -it <image> "$@"
+exec /usr/bin/docker run --volume="$PWD:$PWD" --user="$(id --user):$(id --group)" --workdir="$PWD" --env=HOME --entrypoint="$(basename "${BASH_SOURCE[0]}")" --rm -it docker.pkg.github.com/geek1011/nickeltc/nickeltc:1 "$@"
 ```
 
 Then, you can symlink it to:
@@ -75,8 +77,16 @@ relocation and DESTDIR/prefixes are up to date.
 ### Versioning
 The docker images will be tagged with a version in the form `<major>`,
 `<major>.<minor>`, `<major>.<minor>.<commit-sha>.<build-number>` and will be
-released on a rolling basis. Note that there is not a `latest` tag, so you
-must choose a versioned one.
+released on a rolling basis.
+
+Note that there is not a `latest` tag, so you must choose a versioned one. In
+general, you should choose a tag in the form `<major>.<minor>`, as the
+`<major>.<minor>.<commit-sha>.<build-number>` ones may be deleted at any time,
+and the `<major>` ones may break your build at some point in the future.
+
+There are also builds of each commit available in the `nickeltc-git` image, but
+these should be only used temporarily or for testing. To reference the latest
+commit on a branch, use the branch name as the tag.
 
 Major versions will be incremented manually when:
 - The path to the toolchain or an important tool changes.
