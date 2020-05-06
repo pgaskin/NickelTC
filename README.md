@@ -30,7 +30,7 @@ To run it directly from the docker image, you can create a wrapper like:
 
 ```sh
 #!/bin/bash
-exec /usr/bin/docker run --volume="$PWD:$PWD" --user="$(id --user):$(id --group)" --workdir="$PWD" --env=HOME --entrypoint="$(basename "${BASH_SOURCE[0]}")" --rm -it docker.pkg.github.com/geek1011/nickeltc/nickeltc:1 "$@"
+exec /usr/bin/docker run --volume="$PWD:$PWD" --user="$(id --user):$(id --group)" --workdir="$PWD" --env=HOME --entrypoint="$(basename "${BASH_SOURCE[0]}")" --rm -it docker.io/geek1011/nickeltc:1 "$@"
 ```
 
 Then, you can symlink it to:
