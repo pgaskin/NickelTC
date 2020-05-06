@@ -75,7 +75,7 @@ jobs:
         echo "upstream(${upstream_ref})=${upstream}" &&
         latest="$(test "${upstream}" = "${current}" && echo true || echo false)" &&
         echo "latest=${latest}" &&
-        echo "::set-output is=${latest}"
+        echo "::set-output name=is::${latest}"
 
     - name: Push docker image with additional tags (nickeltc-git)
       if: ${{github.event_name == 'push' && steps.latest.outputs.is == 'true'}}
