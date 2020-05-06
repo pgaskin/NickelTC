@@ -46,7 +46,7 @@ jobs:
       run: |
         echo                "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
         docker tag nickeltc "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
-        docker push         "docker.io/geek1011/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
+        docker push         "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
         echo                "docker.io/geek1011/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
         docker tag nickeltc "docker.io/geek1011/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
         docker push         "docker.io/geek1011/nickeltc-git:$(echo "${{github.sha}}" | head -c7)"
