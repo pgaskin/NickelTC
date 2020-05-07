@@ -55,8 +55,8 @@ RUN cd /tc/ctng-src && \
     rm -rf /tc/ctng-src
 
 # download deps and setup toolchain
-# mote: downloads to /tc/tc-cache, mount as a Docker volume for offline builds
-#       later (files will onlu be downloaded if needed)
+# note: downloads to /tc/tc-cache, mount as a Docker volume for offline builds
+#       later (files will only be downloaded if needed)
 RUN mkdir /tc/tc-src /tc/tc-cache && \
     /tc/ctng-out/bin/ct-ng -C /tc/tc-src arm-nickel-linux-gnueabihf && \
     echo 'CT_SAVE_TARBALLS=y' >> /tc/tc-src/.config && \
@@ -114,7 +114,7 @@ RUN grep 'wget "${GENTOO_MIRROR}/snapshots/portage-latest.tar.xz" -O "${portage_
 RUN grep 'git fetch kobo' /tc/sysroot-src/kobo-nickel-sysroot.sh && \
     sed -i 's:git fetch kobo:git fetch kobo || git fetch kobo || git fetch kobo:g' /tc/sysroot-src/kobo-nickel-sysroot.sh
 
-# download deps and build toolchain
+# download deps and build sysroot
 # note: this is where things start becoming nondeterministic
 #       - ~~the unversioned patches and x-compile.sh script is downloaded from
 #         NiLuJe's SVN~~
