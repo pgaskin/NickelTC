@@ -2,7 +2,7 @@
 # which closely matches Kobo.
 
 # shared between build and runtime
-# note: use the olderst debian version possible to provide the best
+# note: use the oldest debian version possible to provide the best
 #       compatibility when extracting the toolchain for use on an arbitrary host
 #       without docker.
 # note: we use buster here as it's the minimum debian version with
