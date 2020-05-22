@@ -108,7 +108,7 @@ RUN grep 'if ! svn info' /tc/sysroot-src/kobo-nickel-sysroot.sh && \
 
 # use a fixed date for the portage tree
 RUN grep 'wget "${GENTOO_MIRROR}/snapshots/portage-latest.tar.xz" -O "${portage_wd}/portage.tar.xz"' /tc/sysroot-src/kobo-nickel-sysroot.sh && \
-    sed -i 's,${GENTOO_MIRROR}/snapshots/portage-latest.tar.xz,http://distfiles.gentoo.org/snapshots/portage-20200501.tar.xz,g' /tc/sysroot-src/kobo-nickel-sysroot.sh
+    sed -i 's,${GENTOO_MIRROR}/snapshots/portage-latest.tar.xz,https://mirrors.sohu.com/gentoo/snapshots/portage-20200520.tar.xz,g' /tc/sysroot-src/kobo-nickel-sysroot.sh
 
 # dirty hack to fix intermittent pull issues
 RUN grep 'git fetch kobo' /tc/sysroot-src/kobo-nickel-sysroot.sh && \
