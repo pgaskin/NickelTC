@@ -1,16 +1,16 @@
 # NickelTC
 
-[![Build](https://github.com/geek1011/NickelTC/workflows/Build/badge.svg)](https://github.com/geek1011/NickelTC/actions)
+[![Build](https://github.com/pgaskin/NickelTC/workflows/Build/badge.svg)](https://github.com/pgaskin/NickelTC/actions)
 
-A dockerized, deterministic, automated, fixed, and fully-relocatable build of [@NiLuJe](https://github.com/geek1011/NiLuJe)'s [toolchain](http://trac.ak-team.com/trac/log/niluje/Configs/trunk/Kindle/Misc) for Kobo eReaders.
+A dockerized, deterministic, automated, fixed, and fully-relocatable build of [@NiLuJe](https://github.com/pgaskin/NiLuJe)'s [toolchain](http://trac.ak-team.com/trac/log/niluje/Configs/trunk/Kindle/Misc) for Kobo eReaders.
 
-This succeeds the old docker image `docker.io/geek1011/kobo-toolchain` built from [kobo-plugin-experiments](https://github.com/geek1011/kobo-plugin-experiments).
+This succeeds the old docker image `docker.io/geek1011/kobo-toolchain` built from [kobo-plugin-experiments](https://github.com/pgaskin/kobo-plugin-experiments).
 
 ### Features
 - [NickelTC-specific](./Dockerfile)
   - Fully relocatable without any additional scripts.
   - Fixed DESTDIR/prefix (NiLuJe needed to include the DESTDIR in the prefix path
-  due to limitations in the build scripts of some dependencies, see [geek1011/kobo-plugin-experiments#2](https://github.com/geek1011/kobo-plugin-experiments/issues/2))
+  due to limitations in the build scripts of some dependencies, see [pgaskin/kobo-plugin-experiments#2](https://github.com/pgaskin/kobo-plugin-experiments/issues/2))
   - Docker image (but can still run directly on the host).
   - Fully automated builds without dependencies on NiLuJe's home folder layout.
   - Offline builds (TODO: almost).
@@ -24,7 +24,7 @@ This succeeds the old docker image `docker.io/geek1011/kobo-toolchain` built fro
   - Patches for running ancient build systems on newer distros.
 
 ### Usage
-Prebuilt docker images are available [here](https://github.com/geek1011/NickelTC/packages).
+Prebuilt docker images are available [here](https://github.com/pgaskin/NickelTC/packages).
 
 To run it directly from the docker image, you can create a wrapper like:
 
