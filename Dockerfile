@@ -106,9 +106,10 @@ RUN grep 'if ! svn info' /tc/sysroot-src/kobo-nickel-sysroot.sh && \
     sed -i 's:if ! svn info:if false:g' /tc/sysroot-src/kobo-nickel-sysroot.sh && \
     sed -i 's:svn :NOOOOO :g' /tc/sysroot-src/kobo-nickel-sysroot.sh
 
-# use a fixed date for the portage tree
+# use a fixed date for the portage tree, switch to my own mirror which has the old distfiles in the old pre GLEP-75 flat layout
 RUN grep 'wget "${GENTOO_MIRROR}/snapshots/portage-latest.tar.xz" -O "${portage_wd}/portage.tar.xz"' /tc/sysroot-src/kobo-nickel-sysroot.sh && \
-    sed -i 's,${GENTOO_MIRROR}/snapshots/portage-latest.tar.xz,https://mirrors.sohu.com/gentoo/snapshots/portage-20200520.tar.xz,g' /tc/sysroot-src/kobo-nickel-sysroot.sh
+    sed -i 's,portage-latest.tar.xz,portage-20200520.tar.xz,g' /tc/sysroot-src/kobo-nickel-sysroot.sh && \
+    sed -i 's,gentoo.osuosl.org,ntc.storage.geek1011.net/source/portage,g' /tc/sysroot-src/kobo-nickel-sysroot.sh
 
 # dirty hack to fix intermittent pull issues
 RUN grep 'git fetch kobo' /tc/sysroot-src/kobo-nickel-sysroot.sh && \
