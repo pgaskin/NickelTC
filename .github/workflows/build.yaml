@@ -35,18 +35,18 @@ jobs:
 
     - name: Setup docker registries (GitHub Packages)
       if: ${{github.event_name == 'push'}}
-      run: docker login --username geek1011 --password ${{secrets.GHTOKEN}} docker.pkg.github.com
+      run: docker login --username pgaskin --password ${{secrets.GHTOKEN}} ghcr.io
 
     - name: Setup docker registries (Docker Hub)
       if: ${{github.event_name == 'push'}}
-      run: docker login --username geek1011 --password ${{secrets.DHTOKEN}} docker.io
+      run: docker login --username pgaskin --password ${{secrets.DHTOKEN}} docker.io
 
     - name: Push docker image (nickeltc-git)
       if: ${{github.event_name == 'push'}}
       run: |
-        echo                "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
-        docker tag nickeltc "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
-        docker push         "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
+        echo                "ghcr.io/pgaskin/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
+        docker tag nickeltc "ghcr.io/pgaskin/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
+        docker push         "ghcr.io/pgaskin/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
         echo                "docker.io/geek1011/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
         docker tag nickeltc "docker.io/geek1011/nickeltc-git:$(echo "${{github.sha}}" | head -c7)" &&
         docker push         "docker.io/geek1011/nickeltc-git:$(echo "${{github.sha}}" | head -c7)"
@@ -54,9 +54,9 @@ jobs:
     - name: Push docker image (nickeltc)
       if: ${{github.event_name == 'push' && github.ref == 'refs/heads/master'}}
       run: |
-        echo                "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}" &&
-        docker tag nickeltc "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}" &&
-        docker push         "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}" &&
+        echo                "ghcr.io/pgaskin/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}" &&
+        docker tag nickeltc "ghcr.io/pgaskin/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}" &&
+        docker push         "ghcr.io/pgaskin/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}" &&
         echo                "docker.io/geek1011/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}" &&
         docker tag nickeltc "docker.io/geek1011/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}" &&
         docker push         "docker.io/geek1011/nickeltc:1.0-$(echo "${{github.sha}}" | head -c7).${{github.run_number}}"
@@ -80,9 +80,9 @@ jobs:
     - name: Push docker image with additional tags (nickeltc-git)
       if: ${{github.event_name == 'push' && steps.latest.outputs.is == 'true'}}
       run: |
-        echo                "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')" &&
-        docker tag nickeltc "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')" &&
-        docker push         "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')" &&
+        echo                "ghcr.io/pgaskin/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')" &&
+        docker tag nickeltc "ghcr.io/pgaskin/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')" &&
+        docker push         "ghcr.io/pgaskin/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')" &&
         echo                "docker.io/geek1011/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')" &&
         docker tag nickeltc "docker.io/geek1011/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')" &&
         docker push         "docker.io/geek1011/nickeltc-git:$(echo "${{github.ref}}" | sed 's,refs/[^/]*/,,g' | sed 's,/,-,g')"
@@ -90,12 +90,12 @@ jobs:
     - name: Push docker image with additional tags (nickeltc)
       if: ${{github.ref == 'refs/heads/master' && steps.latest.outputs.is == 'true'}}
       run: |
-        echo                "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0" &&
-        docker tag nickeltc "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0" &&
-        docker push         "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1.0" &&
-        echo                "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1" &&
-        docker tag nickeltc "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1" &&
-        docker push         "docker.pkg.github.com/$(echo "${{github.repository}}" | tr A-Z 'a-z')/nickeltc:1" &&
+        echo                "ghcr.io/pgaskin/nickeltc:1.0" &&
+        docker tag nickeltc "ghcr.io/pgaskin/nickeltc:1.0" &&
+        docker push         "ghcr.io/pgaskin/nickeltc:1.0" &&
+        echo                "ghcr.io/pgaskin/nickeltc:1" &&
+        docker tag nickeltc "ghcr.io/pgaskin/nickeltc:1" &&
+        docker push         "ghcr.io/pgaskin/nickeltc:1" &&
         echo                "docker.io/geek1011/nickeltc:1.0" &&
         docker tag nickeltc "docker.io/geek1011/nickeltc:1.0" &&
         docker push         "docker.io/geek1011/nickeltc:1.0" &&
