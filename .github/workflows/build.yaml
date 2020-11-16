@@ -33,13 +33,13 @@ jobs:
         name: Toolchain (Docker)
         path: nickeltc.docker.tar
 
-    - name: Setup docker registries (GitHub Packages)
+    - name: Setup docker registries (GitHub Container Registry)
       if: ${{github.event_name == 'push'}}
       run: docker login --username pgaskin --password ${{secrets.GHTOKEN}} ghcr.io
 
     - name: Setup docker registries (Docker Hub)
       if: ${{github.event_name == 'push'}}
-      run: docker login --username pgaskin --password ${{secrets.DHTOKEN}} docker.io
+      run: docker login --username geek1011 --password ${{secrets.DHTOKEN}} docker.io
 
     - name: Push docker image (nickeltc-git)
       if: ${{github.event_name == 'push'}}
